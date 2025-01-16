@@ -16,35 +16,37 @@ import {
     Link,
     CssBaseline,
     Autocomplete,
+    ListItemAvatar,
+    Avatar,
+    ListItemButton,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Edit as EditIcon, Home as HomeIcon, Route as RouteIcon, Visibility as VisibilityIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import useRankStore from '../store/useRankStore';
 import useRouteStore from '../store/useRouteStore';
 
-interface Route {
-    id: number;
-    fare: number;
-    fromRankId: number;
-    toRankId: number;
-    queueId: number;
-}
-
-
 const RankDetail: React.FC = () => {
     const { id } = useParams();
 
     const { getRank, rank, ranks } = useRankStore()
-    const { routes, toRankId, fare, setFare, setToRankId, addRoute, getRankRoutes } = useRouteStore()
+    const {
+        routes,
+        editRouteId,
+        toRankId,
+        fare,
+        editFare,
+        setEditRouteId,
+        updateRoute,
+        setFare,
+        setToRankId,
+        addRoute,
+        setEditFare,
+        getRankRoutes,
+        deleteRoute
+    } = useRouteStore()
 
-    const [editRouteId, setEditRouteId] = useState<number | null>(null);
-    const [editFare, setEditFare] = useState('');
-    const [editFromRankId, setEditFromRankId] = useState<number | null>(null);
-    const [editToRankId, setEditToRankId] = useState<number | null>(null);
     const navigate = useNavigate();
 
-
-    // Fetch rank and associated routes
     useEffect(() => {
         if (id) {
             getRank(Number(id));
@@ -52,82 +54,22 @@ const RankDetail: React.FC = () => {
         }
     }, [id, getRank, getRankRoutes]);
 
-    const handleAddRoute = () => {
-        // if (fare.trim() === '' || fromRankId === null || toRankId === null) return;
+    const handleAddRoute = () => id ? addRoute(Number(id)) : null;
 
-        if(id){
-            addRoute(Number(id));
-        }
-        // API call to create a new route (replace with actual endpoint)
-        // Example:
-        // fetch(`/api/routes`, {
-        //   method: 'POST',
-        //   body: JSON.stringify({ fare, fromRankId, toRankId, queueId: rank?.queueId }),
-        // })
-        //   .then(res => res.json())
-        //   .then(data => {
-        //     setRoutes([...routes, data.route]); // Add newly created route
-        //     setFare('');
-        //     setFromRankId(null);
-        //     setToRankId(null);
-        //   });
-
-        // Simulating adding a route
-        // const newRoute = { id: routes.length + 1, fare: parseInt(fare), fromRankId, toRankId };
-        // setRoutes([...routes, newRoute]);
-        // setFare('');
-        // setFromRankId(null);
-        // setToRankId(null);
-    };
-
-    const handleEditRoute = (id: number, fare: number, fromRankId: number, toRankId: number) => {
+    const handleEditRoute = (id: number, fare: number) => {
         setEditRouteId(id);
-        setEditFare(fare.toString());
-        setEditFromRankId(fromRankId);
-        setEditToRankId(toRankId);
+        setEditFare(fare);
     };
 
-    const handleUpdateRoute = () => {
-        if (editRouteId !== null && editFare && editFromRankId !== null && editToRankId !== null) {
-            // API call to update route (replace with actual endpoint)
-            // Example:
-            // fetch(`/api/routes/${editRouteId}`, {
-            //   method: 'PUT',
-            //   body: JSON.stringify({ fare: editFare, fromRankId: editFromRankId, toRankId: editToRankId }),
-            // })
-            //   .then(res => res.json())
-            //   .then(data => {
-            //     setRoutes(routes.map(route => route.id === editRouteId ? data.route : route));
-            //     setEditRouteId(null);
-            //     setEditFare('');
-            //     setEditFromRankId(null);
-            //     setEditToRankId(null);
-            //   });
+    const handleUpdateRoute = () => updateRoute();
 
-            // Simulating updating a route
-            // setRoutes(routes.map(route => route.id === editRouteId ? { ...route, fare: parseInt(editFare), fromRankId: editFromRankId, toRankId: editToRankId } : route));
-            setEditRouteId(null);
-            setEditFare('');
-            setEditFromRankId(null);
-            setEditToRankId(null);
-        }
-    };
-
-    const handleDeleteRoute = (id: number) => {
-        // API call to delete route (replace with actual endpoint)
-        // Example:
-        // fetch(`/api/routes/${id}`, { method: 'DELETE' })
-        //   .then(() => {
-        //     setRoutes(routes.filter(route => route.id !== id));
-        //   });
-
-        // Simulating route deletion
-        // setRoutes(routes.filter(route => route.id !== id));
-    };
+    const handleDeleteRoute = (id: number) => deleteRoute(id);
 
     const handleViewQueue = (queueId: number) => {
         navigate(`/queue/${queueId}`);
     };
+
+    const filteredRanks = ranks.filter(rank => !routes.some(route => route.toRankId === rank.id));
 
     return (
         <Container maxWidth="sm" style={{ marginTop: '2rem' }}>
@@ -159,15 +101,6 @@ const RankDetail: React.FC = () => {
 
                     <TextField
                         fullWidth
-                        label="Fare"
-                        value={fare}
-                        onChange={(e) => setFare(e.target.value)}
-                        variant="outlined"
-                        margin="normal"
-                    />
-
-                    <TextField
-                        fullWidth
                         label="From Rank Name"
                         disabled
                         value={rank.rankName}
@@ -176,19 +109,9 @@ const RankDetail: React.FC = () => {
                         type="text"
                     />
 
-                    {/* <TextField
-                        fullWidth
-                        label="To Rank ID"
-                        value={toRankId ?? ''}
-                        onChange={(e) => setToRankId(Number(e.target.value))}
-                        variant="outlined"
-                        margin="normal"
-                        type="number"
-                    /> */}
-
                     <Autocomplete
                         fullWidth
-                        options={ranks.filter(r => r.id !== rank.id)}
+                        options={filteredRanks.filter(r => r.id !== rank.id )}
                         getOptionLabel={(option) => option.rankName}
                         renderInput={(params) => (
                             <TextField
@@ -208,6 +131,15 @@ const RankDetail: React.FC = () => {
                         }}
                     />
 
+                    <TextField
+                        fullWidth
+                        label="Fare"
+                        value={fare}
+                        onChange={(e) => setFare(Number(e.target.value))}
+                        variant="outlined"
+                        margin="normal"
+                    />
+
                     <Button
                         variant="contained"
                         color="primary"
@@ -223,8 +155,16 @@ const RankDetail: React.FC = () => {
                     <List>
                         {routes.map((route) => (
                             <ListItem key={route.id} divider>
-                                <ListItemText primary={`${route.toRankName} Station - R${route.fare}`} />
-                                <IconButton onClick={() => handleEditRoute(route.id, route.fare, route.fromRankId, route.toRankId)}>
+                                <ListItemButton component="a" href={`/rank/${route.toRankId}`}>
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <RouteIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={`${route.toRankName}`} secondary={`R${route.fare}`} />
+                                </ListItemButton>
+
+                                <IconButton onClick={() => handleEditRoute(route.id, route.fare)}>
                                     <EditIcon />
                                 </IconButton>
                                 <IconButton onClick={() => handleDeleteRoute(route.id)}>
@@ -237,7 +177,9 @@ const RankDetail: React.FC = () => {
                         ))}
                     </List>
 
-                    {/* Edit Dialog */}
+                    {/* Edit Dialog 
+                        TODO: need to add more data to be edited
+                    */}
                     <Dialog open={editRouteId !== null} onClose={() => setEditRouteId(null)}>
                         <DialogTitle>Edit Route</DialogTitle>
                         <DialogContent>
@@ -245,7 +187,7 @@ const RankDetail: React.FC = () => {
                                 fullWidth
                                 label="Fare"
                                 value={editFare}
-                                onChange={(e) => setEditFare(e.target.value)}
+                                onChange={(e) => setEditFare(Number(e.target.value))}
                                 variant="outlined"
                                 margin="normal"
                             />
@@ -258,15 +200,16 @@ const RankDetail: React.FC = () => {
                                 margin="normal"
                                 type="number"
                             /> */}
-                            <TextField
+                            {/* <TextField
                                 fullWidth
-                                label="To Rank ID"
+                                label="Destination "
                                 value={editToRankId ?? ''}
                                 onChange={(e) => setEditToRankId(Number(e.target.value))}
                                 variant="outlined"
+                                disabled
                                 margin="normal"
                                 type="number"
-                            />
+                            /> */}
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={() => setEditRouteId(null)} color="secondary">
