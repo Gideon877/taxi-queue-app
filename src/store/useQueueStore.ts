@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { QueueStoreType } from "../utils/interfaces";
 import { persist } from "zustand/middleware";
-import { getTodayQueues, onDeparture, updateQueueCount } from "../api/QueueApi";
-
+import { getQueueById, getTodayQueues, onDeparture, updateQueueCount } from "../api/QueueApi";
+import { getRouteDetailsByQueueId } from "../api/RouteApi";
 
 const useQueueStore = create<QueueStoreType>()(
     persist<QueueStoreType>(
@@ -11,15 +11,16 @@ const useQueueStore = create<QueueStoreType>()(
             taxiCount: 0,
             taxiDepartedCount: 0,
             queueId: 0,
+            fare: 0,
+            routeDetails: null,
 
             setTaxiCount: async (taxiCount: number) => {
                 try {
                     const {queueId } = get()
-                    await updateQueueCount(queueId, "taxi_queue_count", taxiCount);
+                    await updateQueueCount(queueId, "taxiQueueCount", taxiCount);
                     set({ taxiCount })
                 } catch (error) {
                     console.error("Failed to update taxi count:", error);
-
                 }
             },
             setTaxiDepartedCount: async (taxiDepartedCount: number) => {
@@ -40,14 +41,34 @@ const useQueueStore = create<QueueStoreType>()(
                 console.log("Passenger count", passengerCount);
                 try {
                     const {queueId } = get()
-                    await updateQueueCount(queueId, "passenger_queue_count", passengerCount);
+                    await updateQueueCount(queueId, "passengerQueueCount", passengerCount);
                     set({ passengerCount })
                 } catch (error) {
                     console.error("Failed to update passenger count:", error);
-
                 }
             },
-            setQueueId: (queueId: number) => set({ queueId }),
+            setQueueId: (queueId: number) => {
+                get().fetchQueue(queueId)
+                set({ queueId });
+            },
+            fetchQueue: async (queueId: number) => {
+                try {
+                    const data = await getQueueById(queueId);
+                    const {
+                        passengerQueueCount: passengerCount,
+                        taxiDepartedCount,
+                        taxiQueueCount: taxiCount,
+                        id, fare
+                    } = data;
+
+                    const routeDetails = await getRouteDetailsByQueueId(queueId);
+
+                    set({ queueId: id, taxiCount, passengerCount, taxiDepartedCount, fare, routeDetails });
+
+                } catch (error) {
+                    console.error('Failed to fetch today’s queues:', error);
+                }
+            },
             fetchTodayQueues: async () => {
                 try {
                     const data = await getTodayQueues();
