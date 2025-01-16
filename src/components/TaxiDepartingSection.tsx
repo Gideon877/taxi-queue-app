@@ -11,11 +11,11 @@ const TaxiDepartingSection: React.FC<TaxiDepartingSectionType> = ({ onDepartTaxi
             <Grid container justifyContent="center" spacing={2} sx={{ marginBottom: 2 }}>
                 {[...Array(3)].map((_, index) => (
                     <Grid key={index}>
-                        <Avatar alt="Arrow" src="arrow.png" sx={{ width: 100, height: 100 }} variant="square" />
+                        <Avatar alt="Arrow" src="/arrow.png" sx={{ width: 100, height: 100 }} variant="square" />
                     </Grid>
                 ))}
                 <Grid>
-                    <Avatar alt="Taxi" src="minivan.png" sx={{ width: 100, height: 100 }} variant="square"/>
+                    <Avatar alt="Taxi" src="/minivan.png" sx={{ width: 100, height: 100 }} variant="square"/>
                 </Grid>
             </Grid>
             <Typography variant="body1">
