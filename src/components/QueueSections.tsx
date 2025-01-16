@@ -1,28 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Breadcrumbs, CssBaseline, Grid2 as Grid, Link, Paper, Typography, Container } from '@mui/material';
 import PassengerSection from './PassengerSection';
 import TaxiSection from './TaxiSection';
 import TaxiDepartingSection from './TaxiDepartingSection';
-import useAppStore from '../store/useQueueStore';
+import useQueueStore from '../store/useQueueStore';
 import { FaUserCheck, FaTaxi, FaMoneyBillWave } from 'react-icons/fa';
 import { Home as HomeIcon, Route as RouteIcon, LinearScale as LinearScaleIcon } from '@mui/icons-material'
+import { useParams } from 'react-router-dom';
+import RouteDetails from './RouteDetails';
 
 
 const QueueSections: React.FC = () => {
+    const { id } = useParams();
 
     const {
         passengerCount,
         taxiCount,
         taxiDepartedCount,
         setPassengerCount,
+        fare,
+        setQueueId,
         setTaxiCount,
         setTaxiDepartedCount,
-    } = useAppStore()
+    } = useQueueStore()
 
-    const handleJoinPassengerQueue = () => setPassengerCount(passengerCount + 1);
-    const handleLeavePassengerQueue = () => setPassengerCount(Math.max(passengerCount - 1, 0));
+    useEffect(() => {
+        if (id) {
+            setQueueId(Number(id));
+            // fetchQueue(Number(id));
+        }
+    }, [id, setQueueId]);
 
-    const handleJoinTaxiQueue = () => setTaxiCount(taxiCount + 1);
+    const handleJoinPassengerQueue = () => setPassengerCount(Number(passengerCount) + 1);
+    const handleLeavePassengerQueue = () => setPassengerCount(Math.max(Number(passengerCount) - 1, 0));
+
+    const handleJoinTaxiQueue = () => setTaxiCount(Number(taxiCount) + 1);
     const handleDepartTaxi = () => {
         if (taxiCount > 0 && passengerCount >= 5) {
             // setTaxiCount(Math.max(taxiCount - 1, 0))
@@ -33,7 +45,7 @@ const QueueSections: React.FC = () => {
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Container maxWidth="sm" style={{ marginTop: '2rem' }}>
+            <Container maxWidth="sm" style={{ marginTop: '2rem', marginBottom: '4em' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link
                         underline="hover"
@@ -132,11 +144,13 @@ const QueueSections: React.FC = () => {
                         <FaMoneyBillWave size={40} color="#2196F3" style={{ marginRight: 16 }} />
                         <div>
                             <Typography variant="h6">Fare Made</Typography>
-                            <Typography variant="h4">R {(taxiDepartedCount * 50).toFixed(2)}</Typography>
+                            <Typography variant="h4">R {(taxiDepartedCount * 5 * fare).toFixed(2)}</Typography>
                         </div>
                     </Paper>
                 </Grid>
             </Grid>
+
+            <RouteDetails />
         </Box>
     );
 };
