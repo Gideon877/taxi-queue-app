@@ -28,11 +28,14 @@ export interface QueueStoreType {
     taxiDepartedCount: number;
     taxiCount: number;
     queueId: number; 
+    fare: number;
+    routeDetails: RouteDetails | null; 
     setTaxiCount(value: number): void;
     setTaxiDepartedCount(value: number): void;
     setPassengerCount(value: number): void;
     setQueueId: (queueId: number) => void;
     fetchTodayQueues: () => void;
+    fetchQueue: (queueId: number) => void;
 }
 
 export interface Rank {
@@ -59,6 +62,21 @@ export interface RankStoreType {
 
 export interface TaxiRouteParams {
     fromRankId: number;
-    toRankId: number | null;
+    toRankId: number;
     fare: number;
+}
+
+export interface UpdateTaxiRouteParams {    
+    routeId: number | null;
+    fare: number;
+}
+
+export interface RouteDetails {
+    routeId: number;
+    fromRankName: string;
+    toRankName: string;
+    fare: number;
+    passengerQueueCount: number;
+    taxiQueueCount: number;
+    taxiDepartedCount: number;
 }

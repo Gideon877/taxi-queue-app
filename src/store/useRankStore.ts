@@ -20,8 +20,6 @@ const useRankStore = create<RankStoreType>()(
                 const newRank = await createRank(rankName);
                 set({ ranks: [...ranks, newRank], rankName: '' });
             },
-
-            // setRanks: (ranks: Rank[]) => set({ ranks }),
             fetchRanks: async () => {
                 try {
                     const data = await findRanks();
@@ -30,7 +28,6 @@ const useRankStore = create<RankStoreType>()(
                     console.error('Failed to fetch today’s queues:', error);
                 }
             },
-
             updateRank: async () => {
                 try {
                     const { editRankId, editRankName, ranks } = get();
@@ -44,9 +41,7 @@ const useRankStore = create<RankStoreType>()(
                 } catch (error) {
                     console.error('Failed to update rank:', error);
                 }
-
             },
-
             deleteRank: async (id) => {
                 try {
                     const { ranks } = get();
@@ -61,7 +56,6 @@ const useRankStore = create<RankStoreType>()(
             getRank: async (id: number): Promise<Rank | null> => {
                 try {
                     const rank = await findRankById(id);
-                    // console.log(rank, 'use store getRank');
                     set({ rank });
                     return rank;
                 } catch (error) {
@@ -69,8 +63,6 @@ const useRankStore = create<RankStoreType>()(
                     return null;
                 }
             },
-
-
         })),
         {
             name: 'app-rank-storage'
