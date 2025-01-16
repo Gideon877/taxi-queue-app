@@ -22,6 +22,16 @@ export const getTodayQueues = async () => {
     }
 }
 
+export const getQueueById = async (id: number) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching queues:", error);
+        throw error;
+    }
+}
+
 
 export const updateQueueCount = async (queueId: number, field: string, count: number) => {
     try {
