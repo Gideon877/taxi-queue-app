@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Typography, List, ListItem, ListItemText, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import Ranks from './Ranks'  // Assuming you already have a Ranks component
+import Stats from './Stats';
 
 const Home: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -59,6 +60,7 @@ const Home: React.FC = () => {
             <Box sx={{ marginTop: '30px' }}>
                 <Ranks />
             </Box>
+            <Stats />
         </Box>
     )
 }
