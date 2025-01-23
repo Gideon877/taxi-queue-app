@@ -80,3 +80,29 @@ export interface RouteDetails {
     taxiQueueCount: number;
     taxiDepartedCount: number;
 }
+
+// 
+export interface Stat {
+    id: number;
+    fare: number;
+    fromRankName: string;
+    toRankName: string;
+    
+}
+
+export interface DetailedStat {
+    highestFareRoutes: Stat[];
+    frequentRoutes: Stat[];
+    queuesWithMostDepartures: Stat[];
+    fareByFromRank: Stat[];
+}
+
+
+export interface StatsStoreType {
+    stats: Stat[] | null; 
+    detailedStats: DetailedStat | null; 
+
+    fetchStats: () => Promise<void>; 
+    fetchDetailedStats: () => Promise<void>; 
+    resetStats: () => void; 
+}
