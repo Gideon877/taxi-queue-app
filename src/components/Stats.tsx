@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import useStatsStore from '../store/useStatsStore';
-import { Container, Typography, Box, CircularProgress, Grid, Paper, Divider, CssBaseline } from '@mui/material';
-import { FaRoute } from 'react-icons/fa';
+import { Container, Typography, Box, CircularProgress, Grid, Paper, CssBaseline } from '@mui/material';
 
 const Stats: React.FC = () => {
     const { stats, detailedStats, fetchStats, fetchDetailedStats } = useStatsStore();

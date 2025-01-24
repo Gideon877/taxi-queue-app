@@ -83,6 +83,8 @@ export interface RouteDetails {
 
 // 
 export interface Stat {
+    totalFare: number;
+    departures: number;
     id: number;
     fare: number;
     fromRankName: string;
