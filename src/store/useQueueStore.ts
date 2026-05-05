@@ -88,7 +88,6 @@ const useQueueStore = create<QueueStoreType>()(
             name: 'app-queue-storage'
         }
     )
-
 )
 
 export default useQueueStore;
